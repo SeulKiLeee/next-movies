@@ -6,25 +6,15 @@ import NavBar from '../components/NavBar'
 import Seo from '../components/Seo'
 import styles from '../styles/Home.module.css'
 
+interface Props {
+  results: any,
+}
 
-
-const Home: NextPage = () => {
-  const [movies, setMovies] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const { results } = await ( 
-          await fetch(
-            `/api/movies`
-            )
-          ).json();
-          setMovies(results);
-      })();
-  }, []);
+export default function Home({results}: Props){
   return (
     <div className="container">
       <Seo title='Home' />
-      {!movies && <h4>Loading movies...</h4>}
-      {movies?.map(movie => (
+      {results?.map(movie => (
          <div className="movie" key={movie.id}>
           <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt='movie poster' />
          <h4>{movie.original_title}</h4>
@@ -55,4 +45,11 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export async function getServerSideProps() {
+  const { results } = await ( await fetch(`http://localhost:3000/api/movies`)).json();
+  return {
+    props: {
+      results,
+    }
+  }
+}
