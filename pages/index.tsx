@@ -1,6 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import Seo from '../components/Seo'
@@ -11,14 +13,38 @@ interface Props {
 }
 
 export default function Home({results}: Props){
+  const router = useRouter();
+  const onClick = (id:string, title:string) => {
+    router.push({
+      pathname: `/movies/${id}`,
+      query: {
+        id,
+        title,
+      }
+    }, `/movies/${id}`);
+  }
   return (
     <div className="container">
       <Seo title='Home' />
       {results?.map(movie => (
-         <div className="movie" key={movie.id}>
-          <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt='movie poster' />
-         <h4>{movie.original_title}</h4>
-        </div>
+            <div onClick={() => onClick(movie.id, movie.original_title)} 
+              className="movie" key={movie.id}>
+              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt='movie poster' />
+              <Link 
+                href={{
+                  pathname: `/movies/${movie.id}`,
+                  query: {
+                    id: movie.id,
+                    title: movie.original_title,
+                  }
+                }} 
+                as={`/movies/${movie.id}`}
+                >
+               <a>
+                  <h4>{movie.original_title}</h4>
+                  </a>
+              </Link>
+            </div>
       ))}
        <style jsx>{`
         .container {
